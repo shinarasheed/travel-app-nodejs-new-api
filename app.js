@@ -1,19 +1,24 @@
-const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
+const connectDb = require('./config/db');
+
+//connect to database
+connectDb();
 
 const app = express();
+const userRouter = require('./routes/userRoutes');
+const tourRouter = require('./routes/tourRoutes');
 
-const PORT = 3000;
+//MIDDLEWARES
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+app.use(express.static(`${__dirname}/public`));
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
+app.use(express.json());
 
-app.get('/api/v1/tours', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: { tours },
-  });
-});
+//mount routes
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
 
-app.listen(PORT, () => console.log(`App started on ${PORT}...`));
+module.exports = app;
