@@ -144,6 +144,60 @@ getTourStats = async (req, res) => {
   }
 };
 
+//we need to get the most busy month for the tour company in a given year
+const getMostBusyMonth = async (req, res) => {
+  try {
+    const year = req.params.year * 1;
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+      {
+        $addFields: { month: '$_id' },
+      },
+
+      //project can be use to remove or add a field
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+
+      {
+        $sort: { numTourStarts: -1 },
+      },
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      result: plan.length,
+      data: {
+        plan,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ status: 'error', message: error });
+  }
+};
+
 module.exports = {
   aliasTopTous,
   getAllTours,
@@ -152,4 +206,5 @@ module.exports = {
   updateTour,
   deleteTour,
   getTourStats,
+  getMostBusyMonth,
 };
