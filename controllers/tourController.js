@@ -149,6 +149,7 @@ const getMostBusyMonth = async (req, res) => {
   try {
     const year = req.params.year * 1;
     const plan = await Tour.aggregate([
+      //unwind breaks an array into individual elements
       {
         $unwind: '$startDates',
       },
