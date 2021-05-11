@@ -2,12 +2,12 @@ const express = require('express');
 const tourController = require('../controllers/tourController');
 const router = express.Router();
 
-//param middleware
-router.param('id', (req, res, next, val) => {
-  console.log(`tour id is ${val}`);
+//should something like this work for explore
 
-  next();
-});
+//this is good for a request that is frequently made
+router
+  .route('/top-5-cheap-tours')
+  .get(tourController.aliasTopTous, tourController.getAllTours);
 
 router
   .route('/')
