@@ -79,3 +79,21 @@ const getAllTours = async (req, res) => {
     res.status(500).json({ status: 'error', message: error });
   }
 };
+
+//DATABASE
+//QUERY MIDDLEWARE
+// tourSchema.pre(/^find/, function (next) {
+//   this.find({ secretTour: { $ne: true } });
+//   next();
+// });
+
+// tourSchema.post(/^find/, function (docs, next) {
+//   next();
+// });
+
+//AGGREGATION MIDDLEWARE
+//match with seCret tour not equal to true
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { $secretTour: { $ne: true } } });
+//   next();
+// });
