@@ -18,10 +18,15 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+app.use(express.json());
 //serve static files
 app.use(express.static(`${__dirname}/public`));
 
-app.use(express.json());
+//just showing how we can use a middleware
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 //mount routes
 app.use('/api/v1/tours', tourRouter);
