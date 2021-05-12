@@ -1,5 +1,6 @@
 const Tour = require('../models/tour');
 const APIFeatures = require('../utils/apiFeatures');
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
 const aliasTopTous = (req, res, next) => {
@@ -9,7 +10,7 @@ const aliasTopTous = (req, res, next) => {
   next();
 };
 
-const getAllTours = catchAsync(async (req, res) => {
+const getAllTours = catchAsync(async (req, res, next) => {
   //EXECUTE QUERY
   const features = new APIFeatures(Tour.find(), req.query)
     .filter()
@@ -28,10 +29,14 @@ const getAllTours = catchAsync(async (req, res) => {
   });
 });
 
-const getTour = catchAsync(async (req, res) => {
+const getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
   //this will do thesame as above
   // const tour = await Tour.findOne({ _id: req.params.id });
+
+  if (!tour) {
+    return next(new AppError('tour not found', 404));
+  }
   res.status(200).json({
     status: 'success',
     data: {
@@ -40,7 +45,7 @@ const getTour = catchAsync(async (req, res) => {
   });
 });
 
-const createTour = catchAsync(async (req, res) => {
+const createTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.create(req.body);
   res.status(200).json({
     status: 'success',
@@ -50,11 +55,15 @@ const createTour = catchAsync(async (req, res) => {
   });
 });
 
-const updateTour = catchAsync(async (req, res) => {
+const updateTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
+
+  if (!tour) {
+    return next(new AppError('tour not found', 404));
+  }
 
   res.status(200).json({
     status: 'success',
@@ -64,16 +73,19 @@ const updateTour = catchAsync(async (req, res) => {
   });
 });
 
-const deleteTour = catchAsync(async (req, res) => {
+const deleteTour = catchAsync(async (req, res, next) => {
   // await Tour.findByIdAndRemove(req.params.id);
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+  if (!tour) {
+    return next(new AppError('tour not found', 404));
+  }
   res.status(204).json({
     status: 'success',
     data: null,
   });
 });
 
-getTourStats = catchAsync(async (req, res) => {
+getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
       //the match stage pipeline is just a query
@@ -114,7 +126,7 @@ getTourStats = catchAsync(async (req, res) => {
 });
 
 //we need to get the most busy month for the tour company in a given year
-const getMostBusyMonth = catchAsync(async (req, res) => {
+const getMostBusyMonth = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1;
   const plan = await Tour.aggregate([
     //unwind breaks an array into individual elements

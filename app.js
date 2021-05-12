@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const connectDb = require('./config/db');
 
+//error handlers
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -16,6 +17,8 @@ const tourRouter = require('./routes/tourRoutes');
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+//serve static files
 app.use(express.static(`${__dirname}/public`));
 
 app.use(express.json());
@@ -29,6 +32,7 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 
+//use global error handler
 app.use(globalErrorHandler);
 
 module.exports = app;
