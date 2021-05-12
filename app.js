@@ -5,6 +5,8 @@ const connectDb = require('./config/db');
 //error handlers
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+
+//routes
 const userRouter = require('./routes/userRoutes');
 const tourRouter = require('./routes/tourRoutes');
 
