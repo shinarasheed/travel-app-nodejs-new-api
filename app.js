@@ -5,13 +5,13 @@ const connectDb = require('./config/db');
 //error handlers
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+const userRouter = require('./routes/userRoutes');
+const tourRouter = require('./routes/tourRoutes');
 
 //connect to database
 connectDb();
 
 const app = express();
-const userRouter = require('./routes/userRoutes');
-const tourRouter = require('./routes/tourRoutes');
 
 //MIDDLEWARES
 if (process.env.NODE_ENV === 'development') {
