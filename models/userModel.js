@@ -61,6 +61,8 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.pre('save', function (next) {
+  //if the password has not been modified(create user/resetpassword/updatepassword)
+  //or if the document is new
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
