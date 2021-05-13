@@ -34,7 +34,7 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid credentials', 401));
   }
 
-  const passwordIsMatch = await user.comparePassword(password, user.password);
+  const passwordIsMatch = await user.correctPassword(password, user.password);
   if (!passwordIsMatch) {
     return next(new AppError('Invalid credentials', 401));
   }
@@ -52,4 +52,13 @@ const login = catchAsync(async (req, res, next) => {
   });
 });
 
-module.exports = { signup, login };
+const forgetPassword = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError('There is no user with that email address', 404));
+  }
+});
+
+const resetPassword = (req, res, next) => {};
+
+module.exports = { signup, login, forgetPassword, resetPassword };
