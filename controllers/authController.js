@@ -11,6 +11,11 @@ const signToken = (id) => {
   });
 };
 
+const createAndSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  res.status(statusCode).json({ status: 'success', token, data: { user } });
+};
+
 const signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -19,9 +24,7 @@ const signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
   });
 
-  const token = signToken(newUser._id);
-
-  res.status(201).json({ status: 'success', token, data: { user: newUser } });
+  createAndSendToken(newUser, 201, res);
 });
 
 const login = catchAsync(async (req, res, next) => {
@@ -45,12 +48,7 @@ const login = catchAsync(async (req, res, next) => {
   //     return next(new AppError('Invalid credentials', 401));
   //   }
 
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createAndSendToken(user, 200, res);
 });
 
 const forgetPassword = catchAsync(async (req, res, next) => {
@@ -119,13 +117,42 @@ const resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   //4 log the user in. SEND JWT
-  const token = signToken(user._id);
-
-  res.status(200).json({
-    status: 'success',
-    message: 'password reset successful',
-    token,
-  });
+  createAndSendToken(user, 200, res);
 });
 
-module.exports = { signup, login, forgetPassword, resetPassword };
+const updatePassword = catchAsync(async (req, res, next) => {
+  //1 get user
+  const user = await User.findById(req.user.id).select('+password');
+  // const user = await User.findOne({ _id: req.user.id }).select('+password');
+
+  const { passwordCurrent, password, passwordConfirm } = req.body;
+
+  if (!user) {
+    return next(new AppError('user not found', 404));
+  }
+
+  //2 check if current password is correct
+  const passwordIsMatch = await user.correctPassword(
+    passwordCurrent,
+    user.password
+  );
+  if (!passwordIsMatch) {
+    return next(new AppError('Invalid password', 401));
+  }
+
+  //3 if so, update password
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
+  await user.save();
+
+  //4 log the user in. SEND JWT
+  createAndSendToken(user, 200, res);
+});
+
+module.exports = {
+  signup,
+  login,
+  forgetPassword,
+  resetPassword,
+  updatePassword,
+};
