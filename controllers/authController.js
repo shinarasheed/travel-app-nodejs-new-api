@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
@@ -38,7 +39,7 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid credentials', 401));
   }
 
-  //I could have done for the above two lines
+  //I could have done this for the above two lines
   //   if (!user || !(await user.comparePassword(password, user.password))) {
   //     return next(new AppError('Invalid credentials', 401));
   //   }

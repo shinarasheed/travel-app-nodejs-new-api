@@ -1,5 +1,6 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
+const { authenticate, restrictTo } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 //should something like this work for explore
@@ -13,13 +14,22 @@ router.route('/monthly-plan/:year').get(tourController.getMostBusyMonth);
 
 router
   .route('/')
-  .get(tourController.getAllTours)
+  .get(authenticate, tourController.getAllTours)
   .post(tourController.createTour);
 
 router
   .route('/:id')
   .get(tourController.getTour)
-  .patch(tourController.updateTour)
-  .delete(tourController.deleteTour);
+  .patch(
+    authenticate,
+    authenticate,
+    restrictTo('admin', 'lead-guide'),
+    tourController.updateTour
+  )
+  .delete(
+    authenticate,
+    restrictTo('admin', 'lead-guide'),
+    tourController.deleteTour
+  );
 
 module.exports = router;
