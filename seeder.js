@@ -8,14 +8,14 @@ const connectDB = require('./config/db');
 dotenv.config({ path: './config.env' });
 
 //load models
-const Tour = require('./models/tour');
+const Tour = require('./models/tourModel');
 
 //connect to DB
 connectDB();
 
 //Read JSON files
 const tours = JSON.parse(
-  fs.readFileSync('./dev-data/data/tours-simple.json', 'utf-8')
+  fs.readFileSync('./dev-data/data/tours.json', 'utf-8')
 );
 
 //import into DB

@@ -43,7 +43,9 @@ app.use('/api', limiter);
 app.use(express.json({ limit: '10kb' }));
 
 //Data sanitization against NOSQL query injection
-app.use(mongoSanitize);
+
+//THIS IS CAUSING MY REQUESTS TO HANG INDEFINITLY
+// app.use(mongoSanitize);
 
 //Data sanitization against XSS
 app.use(xss());
