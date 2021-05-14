@@ -51,7 +51,14 @@ app.use(xss());
 //prevent parameter pollution
 app.use(
   hpp({
-    whitelist: ['duration'],
+    whitelist: [
+      'duration',
+      'ratingsAverage',
+      'ratingsQuantity',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
   })
 );
 
