@@ -30,9 +30,7 @@ const updateMe = catchAsync(async (req, res, next) => {
     );
   }
 
-  //2) update user document. Be very careful when doing update for user data
-  //make sure it only contains the data that you provide update for
-  //filter out unwanted field names
+  //2) Filter out unwanted field names that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
@@ -40,6 +38,11 @@ const updateMe = catchAsync(async (req, res, next) => {
   });
 
   res.status(200).json({ status: 'success', user: updatedUser });
+});
+
+const deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({ status: 'success', data: null });
 });
 
 const getUser = (req, res) => {
@@ -73,6 +76,7 @@ const deleteUser = (req, res) => {
 module.exports = {
   getAllUsers,
   updateMe,
+  deleteMe,
   getUser,
   createUser,
   updateUser,
