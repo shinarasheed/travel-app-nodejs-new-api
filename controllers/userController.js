@@ -62,14 +62,8 @@ const createUser = (req, res) => {
   });
 };
 
-const updateUser = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: null,
-  });
-};
-
-//the admin only can totally delete a user
+//DO NOT update passwords with this
+const updateUser = factory.updateOne(User);
 const deleteUser = factory.deleteOne(User);
 
 module.exports = {
