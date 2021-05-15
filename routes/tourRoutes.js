@@ -1,10 +1,13 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
+const reviewRouter = require('../routes/reviewRoutes');
 const { authenticate, restrictTo } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-//should something like this work for explore
+//REVIEWS
+router.use('/:tourId/reviews', reviewRouter);
 
+//should something like this work for explore
 //this is good for a request that is frequently made
 router
   .route('/top-5-cheap-tours')
