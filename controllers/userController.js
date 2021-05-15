@@ -2,6 +2,8 @@ const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
+const factory = require('../controllers/handlerFactory');
+
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
   Object.keys(obj).forEach((el) => {
@@ -40,6 +42,7 @@ const updateMe = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', user: updatedUser });
 });
 
+//the user deleting himself(just sets active to false)
 const deleteMe = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user.id, { active: false });
   res.status(204).json({ status: 'success', data: null });
@@ -66,12 +69,8 @@ const updateUser = (req, res) => {
   });
 };
 
-const deleteUser = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: null,
-  });
-};
+//the admin only can totally delete a user
+const deleteUser = factory.deleteOne(User);
 
 module.exports = {
   getAllUsers,
