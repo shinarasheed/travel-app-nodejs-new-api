@@ -14,6 +14,7 @@ const globalErrorHandler = require('./controllers/errorController');
 //routes
 const userRouter = require('./routes/userRoutes');
 const tourRouter = require('./routes/tourRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 
 //connect to database
 connectDb();
@@ -76,6 +77,7 @@ app.use((req, res, next) => {
 //mount routes
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //unhandled routes response/url that does not exist
 app.all('*', (req, res, next) => {
