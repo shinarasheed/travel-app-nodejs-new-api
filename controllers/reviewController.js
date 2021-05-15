@@ -11,8 +11,10 @@ const getAllReviews = catchAsync(async (req, res, next) => {
   });
 });
 
+//jonas implemented this differently
 const createReview = catchAsync(async (req, res, next) => {
   const { review, rating } = req.body;
+  //   const newReview = await Review.create(req.body) jonas's implementation
   const newReview = await Review.create({
     review,
     rating,
