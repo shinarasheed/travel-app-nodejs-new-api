@@ -1,24 +1,28 @@
 const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
-const { authenticate } = require('../middleware/authMiddleware');
+const { authenticate, restrictTo } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-router.get('/me', authenticate, userController.getMe, userController.getUser);
 router.post('/signup', authController.signup);
 router.post('/login', authController.login);
-
 router.post('/forgetpassword', authController.forgetPassword);
 router.patch('/resetpassword/:token', authController.resetPassword);
 
-router.patch('/updatemypassword', authenticate, authController.updatePassword);
+//This will protect all the routes below this middlware
+router.use(authenticate);
 
-router.patch('/updateme', authenticate, userController.updateMe);
-router.delete('/deleteme', authenticate, userController.deleteMe);
+router.patch('/updatemypassword', authController.updatePassword);
+router.get('/me', userController.getMe, userController.getUser);
+router.patch('/updateme', userController.updateMe);
+router.delete('/deleteme', userController.deleteMe);
+
+//This will only authorize admins for the routes below
+router.use(restrictTo('admin'));
 
 router
   .route('/')
-  .get(userController.getAllUsers)
+  .get(restrictTo('admin', 'lead-guide'), userController.getAllUsers)
   .post(userController.createUser);
 
 router

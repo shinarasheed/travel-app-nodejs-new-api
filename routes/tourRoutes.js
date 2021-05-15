@@ -13,12 +13,22 @@ router
   .route('/top-5-cheap-tours')
   .get(tourController.aliasTopTous, tourController.getAllTours);
 router.route('/tour-stats').get(tourController.getTourStats);
-router.route('/monthly-plan/:year').get(tourController.getMostBusyMonth);
+router
+  .route('/monthly-plan/:year')
+  .get(
+    authenticate,
+    restrictTo('admin', 'lead-guide', 'guide'),
+    tourController.getMostBusyMonth
+  );
 
 router
   .route('/')
-  .get(authenticate, tourController.getAllTours)
-  .post(tourController.createTour);
+  .get(tourController.getAllTours)
+  .post(
+    authenticate,
+    restrictTo('admin', 'lead-guide'),
+    tourController.createTour
+  );
 
 router
   .route('/:id')
