@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -21,7 +22,13 @@ connectDb();
 
 const app = express();
 
+//template engine
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 //MIDDLEWARES
+//serve static files
+app.use(express.static(path.join(__dirname, 'public')));
 
 //set secure http headers
 app.use(helmet());
@@ -65,13 +72,15 @@ app.use(
   })
 );
 
-//serve static files
-app.use(express.static(`${__dirname}/public`));
-
 //just showing how we can use a middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
+});
+
+//View Routes
+app.get('/', (req, res) => {
+  res.status(200).render('base');
 });
 
 //mount routes
