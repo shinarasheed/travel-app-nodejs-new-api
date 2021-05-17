@@ -2,6 +2,7 @@ const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 
 const factory = require('../controllers/handlerFactory');
+const AppError = require('../utils/appError');
 
 const getAllTours = factory.getAll(Tour);
 const getTour = factory.getOne(Tour, { path: 'reviews' });
@@ -106,6 +107,41 @@ const getMostBusyMonth = catchAsync(async (req, res, next) => {
   });
 });
 
+//get tours within a certain radius(km or miles) from where you are
+const getToursWithin = catchAsync(async (req, res, next) => {
+  //  '/tours-within/:distance/center/:lat,lng/unit/:unit',
+  const { distance, latlng, unit } = req.params;
+  //array destructing
+  const [lat, lng] = latlng.split(',');
+
+  const radius = unit === 'mi' ? distance / 3958.8 : distance / 6371;
+
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat, lng',
+        400
+      )
+    );
+  }
+
+  //in geojson we specify the lng before the lat
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: {
+        $centerSphere: [[lng, lat], radius],
+      },
+    },
+  });
+  res.status(200).json({
+    status: 'success',
+    result: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+});
+
 module.exports = {
   aliasTopTous,
   getAllTours,
@@ -115,4 +151,5 @@ module.exports = {
   deleteTour,
   getTourStats,
   getMostBusyMonth,
+  getToursWithin,
 };
