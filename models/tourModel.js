@@ -133,7 +133,7 @@ tourSchema.virtual('reviews', {
   localField: '_id',
 });
 
-//DOCUMENT MIDDLEWARE runs before the save and create commands but not for inserMany()
+//DOCUMENT MIDDLEWARE
 //generate slug
 tourSchema.pre('save', function (next) {
   //this references the document being saved or created
