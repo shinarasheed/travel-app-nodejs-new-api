@@ -16,6 +16,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const tourRouter = require('./routes/tourRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 
 //connect to database
 connectDb();
@@ -78,12 +79,8 @@ app.use((req, res, next) => {
   next();
 });
 
-//View Routes
-app.get('/', (req, res) => {
-  res.status(200).render('base');
-});
-
 //mount routes
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
