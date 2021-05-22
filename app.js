@@ -6,6 +6,9 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
 const connectDb = require('./config/db');
 
 //error handlers
@@ -22,18 +25,18 @@ const viewRouter = require('./routes/viewRoutes');
 connectDb();
 
 const app = express();
+app.use(cors());
 
 //template engine
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 //MIDDLEWARES
-
 //serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 //set secure http headers
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 //development logging
 if (process.env.NODE_ENV === 'development') {
@@ -51,6 +54,7 @@ app.use('/api', limiter);
 
 //Bodyparser.  parse body data
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 //Data sanitization against NOSQL query injection
 
@@ -74,9 +78,9 @@ app.use(
   })
 );
 
-//just showing how we can use a middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  // console.log(req.cookies);
   next();
 });
 

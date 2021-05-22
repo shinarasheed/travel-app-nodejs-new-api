@@ -12,6 +12,8 @@ const authenticate = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -57,4 +59,31 @@ const restrictTo = (...roles) => {
   };
 };
 
-module.exports = { authenticate, restrictTo };
+const isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    // 2) Verify token
+    const decoded = await promisify(jwt.verify)(
+      req.cookie.jwt,
+      process.env.JWT_SECRET
+    );
+
+    // 3) Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+
+    // 4) Check if user changed password after the token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    // THERE IS A LOGGED IN USER
+    //make the user accessible to the pug templates.we can then have access to user
+    res.locals.user = currentUser;
+    return next();
+  }
+  next();
+});
+
+module.exports = { authenticate, restrictTo, isLoggedIn };

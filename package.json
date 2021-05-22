@@ -8,13 +8,21 @@
     "start:prod": "set NODE_ENV=production && nodemon server.js",
     "data:import": "node seeder -i",
     "data:destroy": "node seeder -d",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "watch": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "shina",
   "license": "MIT",
   "dependencies": {
+    "@babel/polyfill": "^7.4.4",
+    "axios": "^0.21.1",
+    "babel": "^6.23.0",
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
+    "cookie-parser": "^1.4.5",
+    "core-js": "^2.6.12",
+    "cors": "^2.8.5",
     "dotenv": "^9.0.1",
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.1.0",
@@ -26,6 +34,7 @@
     "morgan": "^1.10.0",
     "nodemailer": "^6.6.0",
     "pug": "^3.0.2",
+    "regenerator-runtime": "^0.13.7",
     "slugify": "^1.5.2",
     "validator": "^13.6.0",
     "xss-clean": "^0.1.1"
@@ -40,6 +49,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react": "^7.23.2",
     "nodemon": "^2.0.7",
+    "parcel-bundler": "^1.12.5",
     "prettier": "^2.3.0"
   }
 }
