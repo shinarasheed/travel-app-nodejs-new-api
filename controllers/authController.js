@@ -58,7 +58,7 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Invalid credentials', 401));
   }
 
-  //I could have done this for the above two lines
+  //I could have just done this for the above two lines
   //   if (!user || !(await user.comparePassword(password, user.password))) {
   //     return next(new AppError('Invalid credentials', 401));
   //   }
