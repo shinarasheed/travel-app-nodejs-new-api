@@ -11,6 +11,8 @@ const signToken = (id) => {
   });
 };
 
+//this makes authentication very secure
+//we cannot delete or manipulate the token
 const createAndSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
@@ -65,6 +67,15 @@ const login = catchAsync(async (req, res, next) => {
 
   createAndSendToken(user, 200, res);
 });
+
+const logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({ status: 'success' });
+};
 
 const forgetPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
@@ -167,6 +178,7 @@ const updatePassword = catchAsync(async (req, res, next) => {
 module.exports = {
   signup,
   login,
+  logout,
   forgetPassword,
   resetPassword,
   updatePassword,
