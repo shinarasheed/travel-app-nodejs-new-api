@@ -59,31 +59,36 @@ const restrictTo = (...roles) => {
   };
 };
 
-const isLoggedIn = catchAsync(async (req, res, next) => {
+// Only for rendered pages, no errors!
+const isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
-    // 2) Verify token
-    const decoded = await promisify(jwt.verify)(
-      req.cookie.jwt,
-      process.env.JWT_SECRET
-    );
+    try {
+      // 1) verify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
 
-    // 3) Check if user still exists
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
+      // 2) Check if user still exists
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      // 3) Check if user changed password after the token was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // THERE IS A LOGGED IN USER
+      res.locals.user = currentUser;
+      return next();
+    } catch (err) {
       return next();
     }
-
-    // 4) Check if user changed password after the token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
-
-    // THERE IS A LOGGED IN USER
-    //make the user accessible to the pug templates.we can then have access to user
-    res.locals.user = currentUser;
-    return next();
   }
+
   next();
-});
+};
 
 module.exports = { authenticate, restrictTo, isLoggedIn };
