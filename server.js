@@ -15,7 +15,7 @@ const app = require('./app');
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () =>
   console.log(
-    `App started in ${process.env.NODE_ENV} on ${PORT}...`.yellow.bold
+    `App started in ${process.env.NODE_ENV} on port ${PORT}...`.yellow.bold
   )
 );
 

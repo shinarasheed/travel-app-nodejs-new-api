@@ -1,5 +1,6 @@
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 const getOverView = catchAsync(async (req, res, next) => {
   //1) Get tour data from collection
   const tours = await Tour.find();
@@ -13,6 +14,11 @@ const getTour = catchAsync(async (req, res, next) => {
     path: 'reviews',
     select: 'review rating user',
   });
+
+  if (!tour) {
+    return next(new AppError('There is no tour with that name', 404));
+  }
+
   res.status(200).render('tour', {
     title: `${tour.name} Tour`,
     tour,
