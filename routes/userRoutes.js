@@ -2,6 +2,7 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 const { authenticate, restrictTo } = require('../middleware/authMiddleware');
+const { uploadUserPhoto } = require('../middleware/mediaUpload');
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.use(authenticate);
 
 router.patch('/updatemypassword', authController.updatePassword);
 router.get('/me', userController.getMe, userController.getUser);
-router.patch('/updateme', userController.updateMe);
+router.patch('/updateme', uploadUserPhoto, userController.updateMe);
 router.delete('/deleteme', userController.deleteMe);
 
 //This will only authorize admins for the routes below
