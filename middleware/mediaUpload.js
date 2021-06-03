@@ -1,5 +1,4 @@
 const multer = require('multer');
-const { async } = require('regenerator-runtime');
 const sharp = require('sharp');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
