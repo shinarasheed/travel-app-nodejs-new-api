@@ -33,7 +33,14 @@ if (userDataForm)
     e.preventDefault();
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
-    updateSettings({ name, email }, 'data');
+    const photo = document.getElementById('photo').files[0];
+
+    const form = new FormData();
+    form.append('name', name);
+    form.append('email', email);
+    form.append('photo', photo);
+
+    updateSettings(form, 'data');
   });
 
 if (userPasswordForm)
