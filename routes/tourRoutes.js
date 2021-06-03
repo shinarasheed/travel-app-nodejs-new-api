@@ -2,6 +2,11 @@ const express = require('express');
 const tourController = require('../controllers/tourController');
 const reviewRouter = require('../routes/reviewRoutes');
 const { authenticate, restrictTo } = require('../middleware/authMiddleware');
+const {
+  uploadTourImages,
+  resizeTourImages,
+} = require('../middleware/mediaUpload');
+
 const router = express.Router();
 
 //REVIEWS
@@ -41,7 +46,8 @@ router
   .get(tourController.getTour)
   .patch(
     authenticate,
-    authenticate,
+    uploadTourImages,
+    resizeTourImages,
     restrictTo('admin', 'lead-guide'),
     tourController.updateTour
   )
