@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 const pug = require('pug');
 const { htmlToText } = require('html-to-text');
 
-const sendEmailClass = class Email {
+const Email = class {
   constructor(user, url) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
@@ -52,6 +52,13 @@ const sendEmailClass = class Email {
   async sendWelcome() {
     await this.send('welcome', 'Welcome to the natours Family');
   }
+
+  async sendPasswordReset() {
+    await this.send(
+      'passwordReset',
+      'Your password reset token (valid for only 10 minutes)'
+    );
+  }
 };
 
-module.exports = sendEmailClass;
+module.exports = Email;
